@@ -1,4 +1,4 @@
-module github.com/mausam/markdown-to-pdf
+module github.com/mausam-giri/tools
 
 go 1.25.0
 

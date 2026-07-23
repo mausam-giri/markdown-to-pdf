@@ -5,6 +5,6 @@
 *.dylib
 *.test
 *.out
-/markdown-to-pdf
+/tools
 .env
 .DS_Store

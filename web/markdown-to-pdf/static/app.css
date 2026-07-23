@@ -71,6 +71,21 @@ textarea {
   min-width: 0;
 }
 
+.brand-home {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-decoration: none;
+  padding: 6px 8px;
+  border-radius: 6px;
+  flex-shrink: 0;
+}
+
+.brand-home:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
 .brand-mark {
   width: 28px;
   height: 28px;

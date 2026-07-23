@@ -7,7 +7,7 @@ on:
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPOSITORY: markforge
+  ECR_REPOSITORY: tools
 
 permissions:
   id-token: write

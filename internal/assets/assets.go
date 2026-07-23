@@ -3,6 +3,7 @@ package assets
 import (
 	"io/fs"
 	"net/http"
+	"strings"
 
 	"github.com/CAFxX/httpcompression"
 	"github.com/tdewolff/minify/v2"
@@ -12,7 +13,7 @@ import (
 )
 
 // Handler serves static files from fsys, minified (html/css/js) and compressed
-// (gzip/brotli/zstd) via library middleware — no custom encode/serve path.
+// (gzip/brotli/zstd), with trailing-slash redirects for tool directories.
 func Handler(fsys fs.FS) (http.Handler, error) {
 	m := minify.New()
 	m.AddFunc("text/css", css.Minify)
@@ -25,7 +26,18 @@ func Handler(fsys fs.FS) (http.Handler, error) {
 		return nil, err
 	}
 
-	var h http.Handler = http.FileServer(http.FS(fsys))
+	files := http.FileServer(http.FS(fsys))
+	var h http.Handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Ensure /markdown-to-pdf → /markdown-to-pdf/ so relative assets resolve
+		p := r.URL.Path
+		if p != "/" && !strings.HasSuffix(p, "/") && !strings.Contains(strings.TrimPrefix(p, "/"), ".") {
+			if st, err := fs.Stat(fsys, strings.TrimPrefix(p, "/")+"/index.html"); err == nil && !st.IsDir() {
+				http.Redirect(w, r, p+"/", http.StatusMovedPermanently)
+				return
+			}
+		}
+		files.ServeHTTP(w, r)
+	})
 	h = m.Middleware(h)
 	h = compress(h)
 	return h, nil
